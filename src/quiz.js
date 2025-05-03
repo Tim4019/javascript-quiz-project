@@ -59,5 +59,6 @@ class Quiz {
         }, 0);
 
         return totalDifficulty / this.questions.length;
+        
     }
 }
