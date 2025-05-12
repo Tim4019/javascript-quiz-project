@@ -45,14 +45,36 @@ document.addEventListener("DOMContentLoaded", () => {
 
   /************  SHOW INITIAL CONTENT  ************/
 
-  // Convert the time remaining in seconds to minutes and seconds, and pad the numbers with zeros if needed
-  const minutes = Math.floor(quiz.timeRemaining / 60).toString().padStart(2, "0");
-  const seconds = (quiz.timeRemaining % 60).toString().padStart(2, "0");
+  function setTimeRemaning() {
+      // Convert the time remaining in seconds to minutes and seconds, and pad the numbers with zeros if needed
+    const minutes = Math.floor(quiz.timeRemaining / 60).toString().padStart(2, "0");
+    const seconds = (quiz.timeRemaining % 60).toString().padStart(2, "0");
 
-  // Display the time remaining in the time remaining container
-  const timeRemainingContainer = document.getElementById("timeRemaining");
-  timeRemainingContainer.innerText = `${minutes}:${seconds}`;
+    // Display the time remaining in the time remaining container
+    const timeRemainingContainer = document.getElementById("timeRemaining");
+    timeRemainingContainer.innerText = `${minutes}:${seconds}`;
 
+  }
+
+  setTimeRemaning();
+
+  let remainingTimer;
+  function startRemainingTimer() {
+     remainingTimer = setInterval(function () {
+      console.log("set timer");
+
+      quiz.timeRemaining--;
+
+      if(quiz.timeRemaining === 0) {
+        clearInterval(remainingTimer);
+        showResults();
+      }
+      console.log(quiz.timeRemaining);
+      setTimeRemaning();
+    }, 1000);
+  }
+  
+  startRemainingTimer();
   // Show first question
   showQuestion();
 
@@ -79,6 +101,7 @@ document.addEventListener("DOMContentLoaded", () => {
   function showQuestion() {
     // If the quiz has ended, show the results
     if (quiz.hasEnded()) {
+      clearInterval(remainingTimer);
       showResults();
       return;
     }
@@ -217,16 +240,21 @@ document.addEventListener("DOMContentLoaded", () => {
   let restartButton = document.querySelector(".button-secondary");
 
    restartButton.addEventListener("click", function(e) {
-     quiz.currentQuestionIndex = 0;
-     quiz.correctAnswers = 0;
+    quiz.currentQuestionIndex = 0;
+    quiz.correctAnswers = 0;
 
-     quizView.style.display = "flex";
-     endView.style.display = "none";
+    quiz.timeRemaining = quizDuration;
+    setTimeRemaning();
+    startRemainingTimer();
+  
+    quizView.style.display = "flex";
+    endView.style.display = "none";
 
     quiz.shuffleQuestions();
 
     showQuestion();
   });
-  
-  
+
 });
+
+
